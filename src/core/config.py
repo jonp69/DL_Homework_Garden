@@ -19,6 +19,8 @@ class Config:
         self.links_file = self.config_dir / "links.json"
         self.filters_file = self.config_dir / "filters.json"
         self.files_file = self.config_dir / "files.json"
+        # Directory to store/link text files
+        self.link_files_dir = self.config_dir / "Link_files"
         
         # Default configuration
         self.default_config = {
@@ -42,6 +44,12 @@ class Config:
         }
         
         self.config = self.load_config()
+        
+        # Ensure the Link_files directory exists
+        try:
+            self.link_files_dir.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            logger.warning(f"Could not create Link_files directory: {e}")
     
     def load_config(self) -> Dict[str, Any]:
         """Load configuration from file."""

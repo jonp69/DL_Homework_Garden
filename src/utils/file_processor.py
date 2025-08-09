@@ -7,14 +7,22 @@ import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from datetime import datetime
+from ..core.config import Config
 
 logger = logging.getLogger(__name__)
 
 class FileProcessor:
     """Processor for extracting links from files."""
     
-    def __init__(self, files_file: Path):
+    def __init__(self, files_file: Path, config: Optional[Config] = None):
         self.files_file = files_file
+        self.config = config
+        # Prefer Link_files dir from config for creating/saving files
+        self.link_files_dir = (config.link_files_dir if config else self.files_file.parent / "Link_files")
+        try:
+            self.link_files_dir.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            logger.warning(f"Could not ensure Link_files exists: {e}")
         self.processed_files: Dict[str, Dict[str, Any]] = {}
         self.load_processed_files()
     
@@ -172,6 +180,10 @@ class FileProcessor:
         contents = []
         
         try:
+            # If caller passes the app root or nothing relevant, default to Link_files
+            if not directory or not directory.exists():
+                directory = self.link_files_dir
+            
             if recursive:
                 files = directory.rglob('*')
             else:
@@ -236,11 +248,11 @@ class FileProcessor:
                 if file_data.get('status') == 'processed_halted']
     
     def save_clipboard_content(self, content: str) -> Path:
-        """Save clipboard content to a timestamped file."""
+        """Save clipboard content to a timestamped file in Link_files."""
         try:
             timestamp = int(datetime.now().timestamp())
             filename = f"Clipboard_{timestamp:06d}.txt"
-            file_path = self.files_file.parent / filename
+            file_path = self.link_files_dir / filename
             
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)

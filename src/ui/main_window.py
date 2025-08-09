@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         # Initialize managers
         self.link_manager = LinkManager(config.links_file)
         self.filter_manager = FilterManager(config.filters_file)
-        self.file_processor = FileProcessor(config.files_file)
+        self.file_processor = FileProcessor(config.files_file, config)
         self.download_manager = DownloadManager(config, self.link_manager)
         
         # Register UI callback for limit decisions (thread-safe via signal)
@@ -235,19 +235,27 @@ class MainWindow(QMainWindow):
     def parse_txt_files(self) -> None:
         """Parse text files from a directory."""
         try:
+            # Ensure default directory exists for convenience
+            try:
+                self.config.link_files_dir.mkdir(parents=True, exist_ok=True)
+            except Exception:
+                pass
+            default_dir = str(self.config.link_files_dir)
             directory = QFileDialog.getExistingDirectory(
                 self, 
                 "Select Directory with Text Files",
-                str(Path.home())
+                default_dir
             )
             
+            # If cancelled, do nothing
             if not directory:
                 return
+            
+            directory_path = Path(directory)
             
             self.status_label.setText("Processing files...")
             QApplication.processEvents()
             
-            directory_path = Path(directory)
             contents = self.file_processor.process_directory(directory_path, recursive=True)
             
             total_links = 0
@@ -283,7 +291,7 @@ class MainWindow(QMainWindow):
                 QMessageBox.information(self, "Info", "Clipboard is empty")
                 return
             
-            # Save clipboard content to file
+            # Save clipboard content to Link_files
             clipboard_file = self.file_processor.save_clipboard_content(text)
             
             # Add links from clipboard
@@ -301,7 +309,7 @@ class MainWindow(QMainWindow):
             self.link_list_widget.refresh()
             self.update_stats()
             
-            logger.info(f"Added {len(links)} links from clipboard")
+            logger.info(f"Added {len(links)} links from clipboard to {clipboard_file}")
             
         except Exception as e:
             logger.error(f"Error loading from clipboard: {e}")
