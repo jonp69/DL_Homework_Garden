@@ -309,6 +309,9 @@ class MainWindow(QMainWindow):
     
     def process_link_with_filters(self, link) -> bool:
         """Process a link through filters, prompting user if no match."""
+        # Offer to trim common trailing closers before filtering
+        self.maybe_trim_url(link)
+        
         matching_filter = self.filter_manager.find_matching_filter(link.url)
         
         if matching_filter:
@@ -337,6 +340,27 @@ class MainWindow(QMainWindow):
             else:
                 # User cancelled, halt processing
                 return False
+
+    def maybe_trim_url(self, link) -> None:
+        """Ask user whether to remove common trailing closers from the URL."""
+        try:
+            original = link.url or ""
+            if not original:
+                return
+            trimmed = original.rstrip(")]}'\"")
+            if trimmed != original and len(trimmed) > 0:
+                reply = QMessageBox.question(
+                    self,
+                    "Trim trailing characters",
+                    f"This link appears to end with a trailing closer.\n\nOriginal:\n{original}\n\nTrim to:\n{trimmed}\n\nDo you want to trim it?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.Yes,
+                )
+                if reply == QMessageBox.StandardButton.Yes:
+                    link.url = trimmed
+                    self.link_manager.save_links()
+        except Exception as e:
+            logger.warning(f"Failed to prompt for URL trimming: {e}")
     
     def start_downloads(self) -> None:
         """Start downloading marked links."""
