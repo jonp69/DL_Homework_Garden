@@ -56,13 +56,13 @@ class FileProcessor:
             logger.error(f"Error saving files tracking: {e}")
             return False
     
-    def process_file(self, file_path: Path) -> Optional[str]:
+    def process_file(self, file_path: Path, ignore_tracking: bool = False) -> Optional[str]:
         """Process a single file and extract its text content."""
         try:
             file_key = str(file_path.absolute())
             
             # Check if already processed
-            if file_key in self.processed_files:
+            if not ignore_tracking and file_key in self.processed_files:
                 status = self.processed_files[file_key].get('status', 'unknown')
                 logger.debug(f"File {file_path} already processed with status: {status}")
                 
@@ -175,9 +175,10 @@ class FileProcessor:
             logger.error(f"Error reading HTML file {file_path}: {e}")
             return None
     
-    def process_directory(self, directory: Path, recursive: bool = True) -> List[str]:
+    def process_directory(self, directory: Path, recursive: bool = True, ignore_tracking: bool = False) -> List[str]:
         """Process all supported files in a directory."""
-        contents = []
+        contents: List[str] = []
+        discovered = 0
         
         try:
             # If caller passes the app root or nothing relevant, default to Link_files
@@ -191,11 +192,12 @@ class FileProcessor:
             
             for file_path in files:
                 if file_path.is_file():
-                    content = self.process_file(file_path)
+                    discovered += 1
+                    content = self.process_file(file_path, ignore_tracking=ignore_tracking)
                     if content:
                         contents.append(content)
             
-            logger.info(f"Processed {len(contents)} files from {directory}")
+            logger.info(f"Processed {len(contents)} files from {directory} (discovered: {discovered})")
             
         except Exception as e:
             logger.error(f"Error processing directory {directory}: {e}")

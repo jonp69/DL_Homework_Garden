@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 )
 
 from ..core.link_manager import LinkManager, LinkMetadata, LinkStatus
+from ..core.filter_name_resolver import FilterNameResolver
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +22,10 @@ class LinkListWidget(QWidget):
     
     links_updated = Signal()
     
-    def __init__(self, link_manager: LinkManager):
+    def __init__(self, link_manager: LinkManager, name_resolver: Optional[FilterNameResolver] = None):
         super().__init__()
         self.link_manager = link_manager
+        self.name_resolver = name_resolver
         self.setup_ui()
         self.refresh()
     
@@ -61,7 +63,7 @@ class LinkListWidget(QWidget):
     def create_filter_controls(self) -> QHBoxLayout:
         """Create filter controls for the link list."""
         layout = QHBoxLayout()
-        
+
         # Status filter
         layout.addWidget(QLabel("Status:"))
         self.status_filter = QComboBox()
@@ -69,26 +71,27 @@ class LinkListWidget(QWidget):
         self.status_filter.addItem("Pending", LinkStatus.PENDING.value)
         self.status_filter.addItem("To Download", LinkStatus.TO_DOWNLOAD.value)
         self.status_filter.addItem("To Skip", LinkStatus.TO_SKIP.value)
+        self.status_filter.addItem("Ignored", LinkStatus.IGNORED.value)
         self.status_filter.addItem("Downloaded", LinkStatus.DOWNLOADED.value)
         self.status_filter.addItem("Skipped", LinkStatus.SKIPPED.value)
         self.status_filter.addItem("Error", LinkStatus.ERROR.value)
         self.status_filter.currentTextChanged.connect(self.refresh)
         layout.addWidget(self.status_filter)
-        
+
         # URL search
         layout.addWidget(QLabel("Search:"))
         self.search_edit = QLineEdit()
         self.search_edit.setPlaceholderText("Search URLs...")
         self.search_edit.textChanged.connect(self.refresh)
         layout.addWidget(self.search_edit)
-        
+
         layout.addStretch()
-        
+
         # Refresh button
         self.btn_refresh = QPushButton("Refresh")
         self.btn_refresh.clicked.connect(self.refresh)
         layout.addWidget(self.btn_refresh)
-        
+
         return layout
     
     def create_action_buttons(self) -> QHBoxLayout:
@@ -155,11 +158,18 @@ class LinkListWidget(QWidget):
         # Store link ID for reference
         item.setData(0, Qt.ItemDataRole.UserRole, link.id)
         
+        # Resolve filter display name
+        filter_display = ""
+        if getattr(link, 'filter_matched_id', None) is not None and self.name_resolver:
+            filter_display = self.name_resolver.resolve(link.filter_matched_id)  # type: ignore[arg-type]
+        elif link.filter_matched:
+            filter_display = link.filter_matched
+        
         # Set column data
         item.setText(0, link.url)
         item.setText(1, link.status.value.replace("_", " ").title())
         item.setText(2, link.source.title())
-        item.setText(3, link.filter_matched)
+        item.setText(3, filter_display)
         item.setText(4, str(link.images_count) if link.images_count > 0 else "")
         item.setText(5, f"{link.file_size_mb:.2f}" if link.file_size_mb > 0 else "")
         
@@ -179,11 +189,11 @@ class LinkListWidget(QWidget):
         self.set_item_color(item, link.status)
         
         # Set tooltip
-        tooltip = f"URL: {link.url}\\nStatus: {link.status.value}\\nSource: {link.source}"
-        if link.filter_matched:
-            tooltip += f"\\nFilter: {link.filter_matched}"
+        tooltip = f"URL: {link.url}\nStatus: {link.status.value}\nSource: {link.source}"
+        if filter_display:
+            tooltip += f"\nFilter: {filter_display}"
         if link.error_message:
-            tooltip += f"\\nError: {link.error_message}"
+            tooltip += f"\nError: {link.error_message}"
         item.setToolTip(0, tooltip)
         
         return item
@@ -200,6 +210,8 @@ class LinkListWidget(QWidget):
             color = QColor("darkgreen")
         elif status == LinkStatus.TO_SKIP:
             color = QColor("yellow")
+        elif status == LinkStatus.IGNORED:
+            color = QColor("khaki")
         elif status == LinkStatus.TO_SKIP_LIMIT:
             color = QColor("orange")
         elif status == LinkStatus.SKIPPED:
@@ -279,6 +291,13 @@ class LinkListWidget(QWidget):
                     item.setText(4, str(link.images_count) if link.images_count > 0 else "")
                     item.setText(5, f"{link.file_size_mb:.2f}" if link.file_size_mb > 0 else "")
                     item.setText(7, link.error_message)
+                    # Update filter display name
+                    filter_display = ""
+                    if getattr(link, 'filter_matched_id', None) is not None and self.name_resolver:
+                        filter_display = self.name_resolver.resolve(link.filter_matched_id)  # type: ignore[arg-type]
+                    elif link.filter_matched:
+                        filter_display = link.filter_matched
+                    item.setText(3, filter_display)
                     
                     # Update color
                     self.set_item_color(item, link.status)

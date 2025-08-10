@@ -23,6 +23,8 @@ class LinkStatus(Enum):
     DOWNLOADED = "downloaded"
     SKIPPED = "skipped"
     ERROR = "error"
+    IGNORED = "ignored"
+    MARKED_FOR_DELETION = "marked_for_deletion"
 
 class LinkMetadata:
     """Metadata for a processed link."""
@@ -36,6 +38,8 @@ class LinkMetadata:
         self.added_timestamp = kwargs.get('added_timestamp', datetime.now().isoformat())
         self.processed_timestamp = kwargs.get('processed_timestamp', None)
         self.downloaded_timestamp = kwargs.get('downloaded_timestamp', None)
+        # Store filter by numeric id for stability; separate human-readable name for UI
+        self.filter_matched_id = kwargs.get('filter_matched_id', None)
         self.filter_matched = kwargs.get('filter_matched', '')
         self.download_path = kwargs.get('download_path', '')
         self.images_count = kwargs.get('images_count', 0)
@@ -56,6 +60,7 @@ class LinkMetadata:
             'added_timestamp': self.added_timestamp,
             'processed_timestamp': self.processed_timestamp,
             'downloaded_timestamp': self.downloaded_timestamp,
+            'filter_matched_id': self.filter_matched_id,
             'filter_matched': self.filter_matched,
             'download_path': self.download_path,
             'images_count': self.images_count,
@@ -65,11 +70,14 @@ class LinkMetadata:
             'tags': self.tags,
             'metadata': self.metadata
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'LinkMetadata':
         """Create LinkMetadata from dictionary."""
-        return cls(data['url'], **data)
+        # Avoid passing 'url' twice (positional and in **kwargs)
+        kwargs = dict(data)
+        url = kwargs.pop('url')
+        return cls(url, **kwargs)
 
 class LinkManager:
     """Manager for link processing and persistence."""

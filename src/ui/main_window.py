@@ -15,8 +15,9 @@ import base64
 
 from ..core.config import Config
 from ..core.link_manager import LinkManager, LinkStatus
-from ..core.filter_manager import FilterManager
+from ..core.filter_manager import FilterManager, LinkFilter, FilterRule, MatchType, FilterAction
 from ..core.download_manager import DownloadManager, DownloadProgress
+from ..core.filter_name_resolver import FilterNameResolver
 from ..utils.file_processor import FileProcessor
 from .filter_list_widget import FilterListWidget
 from .link_list_widget import LinkListWidget
@@ -41,6 +42,9 @@ class MainWindow(QMainWindow):
         # Initialize managers
         self.link_manager = LinkManager(config.links_file)
         self.filter_manager = FilterManager(config.filters_file)
+        # Resolver for id->name display
+        self.filter_name_resolver = FilterNameResolver(self.filter_manager.filters_file)
+        self.filter_name_resolver.refresh()
         self.file_processor = FileProcessor(config.files_file, config)
         self.download_manager = DownloadManager(config, self.link_manager)
         
@@ -165,7 +169,7 @@ class MainWindow(QMainWindow):
         links_label.setStyleSheet("font-weight: bold; font-size: 14px;")
         right_layout.addWidget(links_label)
         
-        self.link_list_widget = LinkListWidget(self.link_manager)
+        self.link_list_widget = LinkListWidget(self.link_manager, name_resolver=self.filter_name_resolver)
         right_layout.addWidget(self.link_list_widget, 2)  # 2/3 of space
         
         # Download progress section
@@ -173,7 +177,7 @@ class MainWindow(QMainWindow):
         progress_label.setStyleSheet("font-weight: bold; font-size: 14px;")
         right_layout.addWidget(progress_label)
         
-        self.download_progress_widget = DownloadProgressWidget()
+        self.download_progress_widget = DownloadProgressWidget(name_resolver=self.filter_name_resolver)
         right_layout.addWidget(self.download_progress_widget, 1)  # 1/3 of space
         
         return right_widget
@@ -253,10 +257,19 @@ class MainWindow(QMainWindow):
             
             directory_path = Path(directory)
             
+            # Ask if user wants to force reprocessing of files even if tracked
+            force = QMessageBox.question(
+                self,
+                "Reprocess Files",
+                "Reprocess files even if they were processed before?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
+            ) == QMessageBox.StandardButton.Yes
+
             self.status_label.setText("Processing files...")
             QApplication.processEvents()
             
-            contents = self.file_processor.process_directory(directory_path, recursive=True)
+            contents = self.file_processor.process_directory(directory_path, recursive=True, ignore_tracking=force)
             
             total_links = 0
             for content in contents:
@@ -319,6 +332,14 @@ class MainWindow(QMainWindow):
         """Process a link through filters, prompting user if no match."""
         # Offer to trim common trailing closers before filtering
         self.maybe_trim_url(link)
+
+        # Auto-ignore rules from config (host-only, domains, regexes)
+        if self._should_ignore_link(link.url):
+            link.status = LinkStatus.IGNORED
+            link.error_message = "ignored(by_rule)"
+            self.link_manager.save_links()
+            logger.info(f"Ignored link by rule: {link.url}")
+            return True
         
         matching_filter = self.filter_manager.find_matching_filter(link.url)
         
@@ -330,24 +351,76 @@ class MainWindow(QMainWindow):
                 link.status = LinkStatus.TO_SKIP
             elif matching_filter.action.value == "deleted":
                 link.deleted = True
+                link.status = LinkStatus.MARKED_FOR_DELETION
+            elif matching_filter.action.value == "ignore":
+                link.status = LinkStatus.IGNORED
+            elif matching_filter.action.value == "skip":
+                # Treat as non-existing: mark deleted and mark as skipped for audit
+                link.status = LinkStatus.SKIPPED
+                link.deleted = True
             
-            link.filter_matched = matching_filter.name
+            # Store stable numeric filter id for processing, keep field as string for JSON
+            link.filter_matched_id = matching_filter.numeric_id
+            link.filter_matched = str(matching_filter.numeric_id) if matching_filter.numeric_id is not None else ""
             self.link_manager.save_links()
-            logger.debug(f"Applied filter '{matching_filter.name}' to {link.url}")
+            logger.debug(f"Applied filter '#{matching_filter.numeric_id}' to {link.url}")
             return True
         else:
-            # No filter matches, show dialog to create one
+            # No site-specific logic; if no filter matches, show dialog to create one
             dialog = FilterDialog(self, link.url)
             if dialog.exec() == QDialog.DialogCode.Accepted:
                 new_filter = dialog.get_filter()
                 self.filter_manager.add_filter(new_filter)
                 self.filter_list_widget.refresh()
                 
+                # Reprocess all links so new filter applies widely
+                self.reprocess_links()
+                
                 # Apply the new filter to this link
                 return self.process_link_with_filters(link)
             else:
-                # User cancelled, halt processing
-                return False
+                # User cancelled; mark this link to skip so processing continues
+                link.status = LinkStatus.TO_SKIP
+                link.error_message = "ignored(user_cancelled)"
+                self.link_manager.save_links()
+                logger.info(f"User cancelled filter for {link.url}; marked to skip")
+                return True
+
+    def _should_ignore_link(self, url: str) -> bool:
+        """Return True if URL should be ignored per config rules."""
+        try:
+            if not url:
+                return True
+            from urllib.parse import urlparse
+            parsed = urlparse(url)
+            # Host-only check
+            if self.config.get('processing.ignore_host_only', True):
+                path_empty = (parsed.path == '' or parsed.path == '/' or parsed.path is None)
+                if parsed.netloc and path_empty and not parsed.query and not parsed.fragment:
+                    return True
+            # Domain blacklist
+            ignored_domains = set(self.config.get('processing.ignored_domains', []) or [])
+            host = (parsed.netloc or '').lower()
+            if host and ignored_domains:
+                # match exact host or subdomain of any ignored domain
+                for dom in ignored_domains:
+                    dom = dom.lower().lstrip('.')
+                    if host == dom or host.endswith('.' + dom):
+                        return True
+            # Regex list
+            patterns = self.config.get('processing.ignored_regexes', []) or []
+            if patterns:
+                import re
+                for pat in patterns:
+                    try:
+                        if re.search(pat, url):
+                            return True
+                    except re.error:
+                        logger.warning(f"Invalid ignore regex skipped: {pat}")
+            return False
+        except Exception as e:
+            logger.warning(f"Ignore check failed for URL: {url} ({e})")
+            return False
 
     def maybe_trim_url(self, link) -> None:
         """Ask user whether to remove common trailing closers from the URL."""
@@ -355,7 +428,7 @@ class MainWindow(QMainWindow):
             original = link.url or ""
             if not original:
                 return
-            trimmed = original.rstrip(")]}'\"")
+            trimmed = original.rstrip(")]}\'\"")
             if trimmed != original and len(trimmed) > 0:
                 reply = QMessageBox.question(
                     self,
@@ -432,7 +505,7 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Info", "No links skipped due to limits")
             return
         
-        dialog = LimitSkipDialog(self, skipped_links, self.download_manager)
+        dialog = LimitSkipDialog(self, skipped_links, self.download_manager, name_resolver=self.filter_name_resolver)
         dialog.exec()
     
     def add_new_filter(self) -> None:
@@ -441,10 +514,17 @@ class MainWindow(QMainWindow):
         if dialog.exec() == QDialog.DialogCode.Accepted:
             new_filter = dialog.get_filter()
             self.filter_manager.add_filter(new_filter)
+            # Refresh resolver after adding a filter
+            self.filter_name_resolver.refresh()
             self.filter_list_widget.refresh()
     
     def on_filter_changed(self) -> None:
         """Handle filter changes."""
+        # Refresh resolver names since user may have edited filter names
+        try:
+            self.filter_name_resolver.refresh()
+        except Exception:
+            pass
         self.link_list_widget.refresh()
         self.update_stats()
     
@@ -467,7 +547,9 @@ class MainWindow(QMainWindow):
                             link.status = LinkStatus.TO_SKIP
                         elif f.action.value == "deleted":
                             link.deleted = True
-                        link.filter_matched = f.name
+                        # Save numeric id on link
+                        link.filter_matched_id = f.numeric_id
+                        link.filter_matched = str(f.numeric_id) if f.numeric_id is not None else ""
                         reprocessed += 1
             # Persist changes
             self.link_manager.save_links()

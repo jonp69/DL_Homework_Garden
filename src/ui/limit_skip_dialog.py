@@ -3,7 +3,7 @@ Dialog for viewing links that were skipped due to limits.
 """
 
 import logging
-from typing import List
+from typing import List, Optional
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -13,16 +13,18 @@ from PySide6.QtWidgets import (
 
 from ..core.link_manager import LinkMetadata
 from ..core.download_manager import DownloadManager
+from ..core.filter_name_resolver import FilterNameResolver
 
 logger = logging.getLogger(__name__)
 
 class LimitSkipDialog(QDialog):
     """Dialog for viewing and managing links skipped due to limits."""
     
-    def __init__(self, parent, skipped_links: List[LinkMetadata], download_manager: DownloadManager):
+    def __init__(self, parent, skipped_links: List[LinkMetadata], download_manager: DownloadManager, name_resolver: Optional[FilterNameResolver] = None):
         super().__init__(parent)
         self.skipped_links = skipped_links
         self.download_manager = download_manager
+        self.name_resolver = name_resolver
         self.setup_ui()
         self.populate_links()
     
@@ -105,11 +107,17 @@ class LimitSkipDialog(QDialog):
             item.setText(1, str(link.images_count) if link.images_count > 0 else "Unknown")
             item.setText(2, f"{link.file_size_mb:.2f}" if link.file_size_mb > 0 else "Unknown")
             
-            # Determine limit exceeded (this would need to be stored in link metadata)
+            # Determine limit exceeded
             limit_exceeded = self.determine_limit_exceeded(link)
             item.setText(3, limit_exceeded)
             
-            item.setText(4, link.filter_matched or "None")
+            # Resolve filter name
+            filter_display = ""
+            if getattr(link, 'filter_matched_id', None) is not None and self.name_resolver:
+                filter_display = self.name_resolver.resolve(link.filter_matched_id)  # type: ignore[arg-type]
+            elif link.filter_matched:
+                filter_display = link.filter_matched
+            item.setText(4, filter_display or "None")
             
             # Format timestamp
             if link.added_timestamp:

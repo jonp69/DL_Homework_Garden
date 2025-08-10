@@ -1,0 +1,23 @@
+{
+  "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\link001.txt": {
+    "path": "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\link001.txt",
+    "processed_timestamp": "2025-08-10T03:49:06.065675",
+    "status": "processed",
+    "size_bytes": 1198,
+    "links_found": 0
+  },
+  "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\linksfromdevchrome001.txt": {
+    "path": "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\linksfromdevchrome001.txt",
+    "processed_timestamp": "2025-08-10T03:49:06.071148",
+    "status": "processed",
+    "size_bytes": 5469,
+    "links_found": 0
+  },
+  "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\link002.txt": {
+    "path": "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\link002.txt",
+    "processed_timestamp": "2025-08-10T03:49:06.067950",
+    "status": "processed",
+    "size_bytes": 41940,
+    "links_found": 0
+  }
+}

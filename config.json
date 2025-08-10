@@ -1,7 +1,7 @@
 {
   "download_limits": {
-    "max_images_per_link": 1000,
-    "max_time_per_link_seconds": 3600,
+    "max_images_per_link": 100,
+    "max_time_per_link_seconds": 300,
     "max_file_size_mb": 500
   },
   "gallery_dl": {
@@ -9,11 +9,12 @@
     "default_args": [
       "--write-metadata",
       "--write-info-json"
-    ]
+    ],
+    "output_dir": "E:\\gallery-dl\\"
   },
   "ui": {
     "theme": "default",
-    "window_geometry": null
+    "window_geometry": "AdnQywADAAAAAAAA///7wAAAB3/////XAAABzP///HMAAAWz////QgAAAAICAAAAB4AAAAAA///73wAAB3/////X"
   },
   "logging": {
     "level": "INFO",

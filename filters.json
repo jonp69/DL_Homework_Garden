@@ -1,0 +1,554 @@
+[
+  {
+    "id": "b9d5eb31-5f9a-4225-af6f-0b56ffb0dbdf",
+    "numeric_id": 1,
+    "name": "Unnamed_1",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "pixiv",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "net",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "en",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "artworks",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "133589185",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-09T19:53:08.932051",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "4dc96bb7-5b2a-47c1-9361-967a85e76a91",
+    "numeric_id": 2,
+    "name": "Unnamed_2",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "pixiv",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "net",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "user",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "32975266",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "series",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "291738",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-09T19:54:06.371898",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "dbdcab8d-2be1-47ae-8f99-3a1aab9d51b2",
+    "numeric_id": 3,
+    "name": "Unnamed_3",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "pixiv",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "net",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "en",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "users",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "73404514",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-09T19:54:23.751936",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "6822356a-ccb3-4ded-a958-c86e015805a3",
+    "numeric_id": 4,
+    "name": "Unnamed_4",
+    "rules": [
+      {
+        "token": "securepubads",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "g",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "doubleclick",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "net",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "static",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "topics",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "topics_frame.html",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "deleted",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T00:15:02.751746",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "368cd400-e624-4633-af0f-00e7361ffc0b",
+    "numeric_id": 5,
+    "name": "Unnamed_5",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "recaptcha",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "net",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "recaptcha",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "enterprise",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "anchor",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "ar=1",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "k=6LfF1dcZAAAAAOHQX8v16MX5SktDwmQINVD_6mB…",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "deleted",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T00:15:31.874128",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "5cb6c969-5215-432c-b98f-29258ca5d5ee",
+    "numeric_id": 6,
+    "name": "Unnamed_6",
+    "rules": [
+      {
+        "token": "docs",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "google",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "offline",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "extension",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "frame",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "ouid=ude0e67ae36aeb604",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "deleted",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T00:15:54.133852",
+    "modified_timestamp": "2025-08-10T03:37:31.061659"
+  },
+  {
+    "id": "491a4f22-e501-428e-97c5-0b4ac722c9a5",
+    "numeric_id": 7,
+    "name": "Unnamed_7",
+    "rules": [
+      {
+        "token": "superuser",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "questions",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "117754",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "how-can-one-copy-urls-from-all-open-tabs-in-a-google-chrome-o…",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "deleted",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T00:16:08.928910",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "81a2e1e7-cacd-4a79-8158-2dc26151a9b8",
+    "numeric_id": 8,
+    "name": "Unnamed_8",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "google",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "recaptcha",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "api2",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "aframe",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "deleted",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T00:16:21.894255",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "bf7fb85d-f030-425b-90d4-2893fe74b905",
+    "numeric_id": 9,
+    "name": "Unnamed_9",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "pixiv",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "net",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "en",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": false,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T03:49:46.641933",
+    "modified_timestamp": "2025-08-10T05:04:34.737896"
+  },
+  {
+    "id": "fe2d7ab7-cf37-4246-8a8a-dbee844a5802",
+    "numeric_id": 11,
+    "name": "Unnamed_11",
+    "rules": [
+      {
+        "token": "exhentai",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "org",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "g",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "3441656",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "91368dcd2f",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T03:50:39.210461",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "398b1598-9908-468d-9739-dc62ed7bfcc0",
+    "numeric_id": 12,
+    "name": "Unnamed_12",
+    "rules": [
+      {
+        "token": "x",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "rinrinlr1800",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T03:51:00.548802",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "7d8e8a75-ca6a-4cc0-930a-391fb223a633",
+    "numeric_id": 14,
+    "name": "Unnamed_14",
+    "rules": [
+      {
+        "token": "kemono",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "cr",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T03:51:41.736362",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "5e3f000f-ce86-4dbf-a18c-0f33edb04b83",
+    "numeric_id": 15,
+    "name": "Unnamed_15",
+    "rules": [
+      {
+        "token": "nhentai",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "net",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "g",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "577630",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T03:58:08.726484",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "3e1f5960-828c-48e8-9ef6-ff9267b59ab8",
+    "numeric_id": 16,
+    "name": "Unnamed_16",
+    "rules": [
+      {
+        "token": "hentaifox",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "artist",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "takamura",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-08-10T03:58:17.994670",
+    "modified_timestamp": ""
+  }
+]

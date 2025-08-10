@@ -9,6 +9,7 @@ import subprocess
 import threading
 import time
 from pathlib import Path
+import queue
 from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -191,6 +192,9 @@ class DownloadManager:
                     self.progress.failed_links += 1
                     if self.skip_current:
                         self.link_manager.update_link_status(link.id, LinkStatus.SKIPPED)
+                    elif link.status == LinkStatus.TO_SKIP_LIMIT:
+                        # Preserve the explicit limit-based skip set during the download
+                        pass
                     else:
                         self.link_manager.update_link_status(link.id, LinkStatus.ERROR)
                 
@@ -214,29 +218,46 @@ class DownloadManager:
         try:
             # Prepare gallery-dl command
             cmd = self._build_gallery_dl_command(link.url)
-            
+
             logger.info(f"Starting download: {link.url}")
             logger.debug(f"Command: {' '.join(cmd)}")
-            
+
             # Start process
             process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
                 text=True,
                 encoding='utf-8'
             )
-            
+
             # Monitor process with timeout and skip capability
             start_time = time.time()
             images_count = 0
-            
+            output_queue: "queue.Queue[str]" = queue.Queue()
+
+            # Reader thread to stream stdout lines without blocking
+            def _reader():
+                try:
+                    assert process.stdout is not None
+                    for line in process.stdout:
+                        try:
+                            output_queue.put_nowait(line)
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+
+            reader_thread = threading.Thread(target=_reader, daemon=True)
+            reader_thread.start()
+
+            last_msg: Optional[str] = None
             while process.poll() is None:
                 if self.stop_event.is_set() or self.skip_current:
                     process.terminate()
                     logger.info(f"Download terminated: {link.url}")
                     return False
-                
+
                 # Check timeout
                 elapsed = time.time() - start_time
                 if elapsed > self.max_time_per_link:
@@ -246,44 +267,106 @@ class DownloadManager:
                         start_time = time.time()
                     else:
                         # User chose to skip
+                        link.error_message = "error(timeout)"
+                        try:
+                            self.link_manager.update_link_status(link.id, LinkStatus.TO_SKIP_LIMIT)
+                        except Exception:
+                            pass
+                        # Surface explicit reason in current operation
+                        self.progress.current_operation = f"Skipped (timeout): {link.url}"
                         process.terminate()
-                        self.link_manager.update_link_status(link.id, LinkStatus.TO_SKIP_LIMIT)
                         return False
-                
+
+                # Drain any new output lines and push to UI
+                drained = False
+                while True:
+                    try:
+                        line = output_queue.get_nowait()
+                    except queue.Empty:
+                        break
+                    drained = True
+                    msg = line.strip()
+                    if msg:
+                        # Suppress consecutive duplicates
+                        if last_msg == msg:
+                            continue
+                        last_msg = msg
+                        # Track images downloaded heuristically
+                        lower = msg.lower()
+                        if ("download" in lower and ("saving" in lower or "downloaded" in lower)) or "exists" in lower:
+                            images_count += 1
+                            self.progress.images_downloaded = images_count
+                        self.progress.current_operation = msg
+                        self._notify_progress()
+
                 time.sleep(0.1)
-            
+
             # Get final output
-            stdout, stderr = process.communicate()
-            
+            # Ensure reader thread finishes and drain remaining lines
+            try:
+                reader_thread.join(timeout=1.0)
+            except Exception:
+                pass
+            remaining_lines: list[str] = []
+            while True:
+                try:
+                    remaining_lines.append(output_queue.get_nowait())
+                except queue.Empty:
+                    break
+            stdout = "".join(remaining_lines)
+            stderr = ""
+
             # Parse output for statistics
-            images_count, file_size = self._parse_gallery_dl_output(stdout)
-            
+            # Combine counts from stream with any final parse of remaining stdout
+            extra_images, file_size = self._parse_gallery_dl_output(stdout)
+            images_count = max(images_count, extra_images)
+
             # Update link metadata
             link.images_count = images_count
             link.file_size_mb = file_size
-            
+
             # Check limits
             if images_count > self.max_images_per_link:
                 logger.warning(f"Image count limit exceeded: {images_count} > {self.max_images_per_link}")
                 if not self._ask_user_continue_or_skip(link, "image_count"):
-                    self.link_manager.update_link_status(link.id, LinkStatus.TO_SKIP_LIMIT)
+                    link.error_message = "error(image_count)"
+                    try:
+                        self.link_manager.update_link_status(link.id, LinkStatus.TO_SKIP_LIMIT)
+                    except Exception:
+                        pass
+                    self.progress.current_operation = f"Skipped (image_count): {link.url}"
                     return False
-            
+
             if file_size > self.max_file_size_mb:
                 logger.warning(f"File size limit exceeded: {file_size}MB > {self.max_file_size_mb}MB")
                 if not self._ask_user_continue_or_skip(link, "file_size"):
-                    self.link_manager.update_link_status(link.id, LinkStatus.TO_SKIP_LIMIT)
+                    link.error_message = "error(file_size)"
+                    try:
+                        self.link_manager.update_link_status(link.id, LinkStatus.TO_SKIP_LIMIT)
+                    except Exception:
+                        pass
+                    self.progress.current_operation = f"Skipped (file_size): {link.url}"
                     return False
-            
+
             # Check return code
             if process.returncode == 0:
                 logger.info(f"Successfully downloaded: {link.url}")
                 return True
             else:
-                logger.error(f"Gallery-dl error for {link.url}: {stderr}")
-                link.error_message = stderr.strip()
+                # Build a helpful error message even when stderr is empty (we merged it into stdout)
+                err = (stderr or "").strip()
+                if not err:
+                    # Try to use the last non-empty stdout line
+                    last_line = None
+                    for line in stdout.splitlines()[::-1]:
+                        if line.strip():
+                            last_line = line.strip()
+                            break
+                    err = last_line or f"gallery-dl failed (code {process.returncode})"
+                logger.error(f"Gallery-dl error for {link.url}: {err}")
+                link.error_message = err
                 return False
-        
+
         except Exception as e:
             logger.error(f"Error downloading {link.url}: {e}")
             link.error_message = str(e)
@@ -296,6 +379,19 @@ class DownloadManager:
         # Add default arguments from config
         default_args = self.config.get('gallery_dl.default_args', [])
         cmd.extend(default_args)
+        
+        # Set output directory only if configured
+        out_dir = self.config.get('gallery_dl.output_dir', "")
+        if out_dir:
+            out_path = Path(out_dir)
+            if not out_path.is_absolute():
+                # Resolve relative to the config directory
+                out_path = (self.config.config_dir / out_path).resolve()
+            try:
+                out_path.mkdir(parents=True, exist_ok=True)
+            except Exception:
+                pass
+            cmd.extend(["-d", str(out_path)])
         
         # Add config file if specified
         config_file = self.config.get('gallery_dl.config_file', '')
@@ -333,6 +429,10 @@ class DownloadManager:
         
         # Fallback: skip
         logger.warning(f"Limit exceeded ({limit_type}) for {link.url}, skipping by default")
+        try:
+            link.error_message = f"error({limit_type})"
+        except Exception:
+            pass
         return False
     
     def get_progress(self) -> DownloadProgress:

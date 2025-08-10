@@ -63,7 +63,7 @@ class FilterDialog(QDialog):
         layout = QFormLayout()
         
         self.name_edit = QLineEdit()
-        self.name_edit.setPlaceholderText("Enter filter name")
+        self.name_edit.setPlaceholderText("Optional; shown in UI only")
         layout.addRow("Name:", self.name_edit)
         
         self.description_edit = QLineEdit()
@@ -87,7 +87,7 @@ class FilterDialog(QDialog):
         layout = QVBoxLayout(container)
         
         # Title
-        title_label = QLabel("Rules (all rules must match):")
+        title_label = QLabel("Rules (positional; tokens must match in order):")
         title_label.setStyleSheet("font-weight: bold;")
         layout.addWidget(title_label)
         
@@ -130,6 +130,8 @@ class FilterDialog(QDialog):
         self.action_combo.addItem("Mark as To Download", FilterAction.TO_DOWNLOAD.value)
         self.action_combo.addItem("Mark as To Skip", FilterAction.TO_SKIP.value)
         self.action_combo.addItem("Mark as Deleted", FilterAction.DELETED.value)
+        self.action_combo.addItem("Ignore (never download)", FilterAction.IGNORE.value)
+        self.action_combo.addItem("Skip (treat as non-existent)", FilterAction.SKIP.value)
         layout.addRow("Action:", self.action_combo)
         
         return layout
@@ -152,37 +154,35 @@ class FilterDialog(QDialog):
         return layout
     
     def populate_from_url(self, url: str) -> None:
-        """Populate the dialog with tokens from URL."""
-        # Parse URL into tokens
+        """Populate with ordered tokens (domain parts, then path segments, then query parts, then fragment)."""
         tokens = self._tokenize_url(url)
-        
-        # Add a row for each unique token
-        seen_tokens = set()
         for token in tokens:
-            if token not in seen_tokens and len(token) > 1:
-                seen_tokens.add(token)
-                self.add_rule(token)
+            # Add each token as an EXACT rule by default
+            self.add_rule(token)
+        # Ensure UI reflects proper enabled state
+        self.on_match_type_changed()
     
     def _tokenize_url(self, url: str) -> List[str]:
-        """Tokenize URL similar to FilterRule logic."""
+        """Tokenize URL into ordered granular tokens matching filter engine semantics."""
         from urllib.parse import urlparse
-        
         parsed = urlparse(url)
-        tokens = []
+        tokens: List[str] = []
         
-        # Add components
+        # Domain parts only (omit full netloc)
         if parsed.netloc:
-            tokens.append(parsed.netloc)
-            # Split domain parts
-            tokens.extend(parsed.netloc.split('.'))
+            tokens.extend([p for p in parsed.netloc.split('.') if p])
+        
+        # Path segments only (omit full path)
         if parsed.path:
-            tokens.append(parsed.path)
-            # Split path parts
-            path_parts = [part for part in parsed.path.split('/') if part]
-            tokens.extend(path_parts)
+            tokens.extend([part for part in parsed.path.split('/') if part])
+        
+        # Query parts (key=value chunks)
         if parsed.query:
-            query_parts = parsed.query.split('&')
-            tokens.extend(query_parts)
+            tokens.extend([p for p in parsed.query.split('&') if p])
+        
+        # Fragment
+        if parsed.fragment:
+            tokens.append(parsed.fragment)
         
         return tokens
     
@@ -201,14 +201,11 @@ class FilterDialog(QDialog):
             display_name = match_type.value.replace("_", " ").title()
             match_combo.addItem(display_name, match_type.value)
         
-        # Default to "contains" if token is provided, "exact" otherwise
-        if token:
-            default_index = match_combo.findData(MatchType.CONTAINS.value)
-        else:
-            default_index = match_combo.findData(MatchType.EXACT.value)
-        
-        if default_index >= 0:
-            match_combo.setCurrentIndex(default_index)
+        # Default to CASE_INSENSITIVE
+        default_index = match_combo.findData(MatchType.CASE_INSENSITIVE.value)
+        if default_index < 0:
+            default_index = 0
+        match_combo.setCurrentIndex(default_index)
         
         self.rules_table.setCellWidget(row, 1, match_combo)
         
@@ -299,11 +296,7 @@ class FilterDialog(QDialog):
     
     def accept_filter(self) -> None:
         """Validate and accept the filter."""
-        # Validate name
-        name = self.name_edit.text().strip()
-        if not name:
-            QMessageBox.warning(self, "Validation Error", "Filter name is required.")
-            return
+        # Name is optional; do not enforce
         
         # Validate rules
         rules = self.get_rules()
@@ -358,11 +351,15 @@ class FilterDialog(QDialog):
         action_value = self.action_combo.currentData()
         action = FilterAction(action_value)
         
+        # Ensure a display name; if empty, assign Unnamed_NNN using numeric id placeholder
+        name_text = self.name_edit.text().strip()
+        if not name_text:
+            name_text = "Unnamed"
+        
         # Create or update filter
         if self.existing_filter:
-            # Update existing filter
             filter_obj = self.existing_filter
-            filter_obj.name = self.name_edit.text().strip()
+            filter_obj.name = name_text
             filter_obj.description = self.description_edit.text().strip()
             filter_obj.enabled = self.enabled_check.isChecked()
             filter_obj.priority = self.priority_spin.value()
@@ -370,9 +367,8 @@ class FilterDialog(QDialog):
             filter_obj.action = action
             filter_obj.modified_timestamp = datetime.now().isoformat()
         else:
-            # Create new filter
             filter_obj = LinkFilter(
-                name=self.name_edit.text().strip(),
+                name=name_text,
                 rules=rules,
                 action=action,
                 description=self.description_edit.text().strip(),
