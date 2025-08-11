@@ -4,6 +4,11 @@
     "max_time_per_link_seconds": 300,
     "max_file_size_mb": 500
   },
+  "processing": {
+    "ignore_host_only": true,
+    "ignored_domains": [],
+    "ignored_regexes": []
+  },
   "gallery_dl": {
     "config_file": "",
     "default_args": [

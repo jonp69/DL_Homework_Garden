@@ -668,12 +668,24 @@ class MainWindow(QMainWindow):
             "file_size": "The download exceeds the maximum file size."
         }
         msg = messages.get(limit_type, "A limit has been exceeded.")
-        reply = QMessageBox.question(
-            self,
-            "Limit Exceeded",
-            f"{msg}\n\nURL:\n{link.url}\n\nDo you want to continue anyway?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
-        )
-        box.result = (reply == QMessageBox.StandardButton.Yes)
+        # Build a modal message box with a safety timeout to default to "No"
+        msg_box = QMessageBox(self)
+        msg_box.setIcon(QMessageBox.Icon.Question)
+        msg_box.setWindowTitle("Limit Exceeded")
+        msg_box.setText(f"{msg}\n\nURL:\n{link.url}\n\nDo you want to continue anyway?\n\n(Automatically selecting 'No' in 30 seconds)")
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        msg_box.setDefaultButton(QMessageBox.StandardButton.No)
+
+        # 30-second auto-timeout -> choose No if unanswered
+        try:
+            timer = QTimer(msg_box)
+            timer.setSingleShot(True)
+            timer.timeout.connect(lambda: msg_box.done(int(QMessageBox.StandardButton.No)))
+            timer.start(30_000)
+        except Exception:
+            # If timer setup fails for any reason, proceed without auto-timeout
+            pass
+
+        result = msg_box.exec()
+        box.result = (result == int(QMessageBox.StandardButton.Yes))
         box.event.set()
