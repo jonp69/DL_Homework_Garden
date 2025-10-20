@@ -3,7 +3,8 @@ Main window for DL Homework Garden application.
 """
 
 from pathlib import Path
-from PySide6.QtCore import Qt, QTimer, Signal, QByteArray
+from PySide6.QtCore import Qt, QTimer, Signal, QByteArray, QUrl
+from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QSplitter, QStatusBar, QProgressBar, QLabel, QMessageBox,
@@ -47,6 +48,11 @@ class MainWindow(QMainWindow):
         self.filter_name_resolver.refresh()
         self.file_processor = FileProcessor(config.files_file, config)
         self.download_manager = DownloadManager(config, self.link_manager)
+        # Track the current directory used to search link files; default to configured Link_files
+        try:
+            self.current_link_search_dir = self.file_processor.link_files_dir
+        except Exception:
+            self.current_link_search_dir = Path.cwd()
         
         # Register UI callback for limit decisions (thread-safe via signal)
         self.download_manager.set_ask_user_callback(self.ask_user_on_limit)
@@ -107,6 +113,11 @@ class MainWindow(QMainWindow):
         self.btn_load_clipboard = QPushButton("Load from Clipboard")
         self.btn_load_clipboard.setToolTip("Add links from current clipboard content")
         toolbar_layout.addWidget(self.btn_load_clipboard)
+        
+        self.btn_open_link_dir = QPushButton("Open Link Folder")
+        self.btn_open_link_dir.setToolTip("Open the directory currently used to search link files")
+        self.btn_open_link_dir.clicked.connect(self.open_link_search_directory)
+        toolbar_layout.addWidget(self.btn_open_link_dir)
         
         toolbar_layout.addStretch()
         
@@ -256,6 +267,12 @@ class MainWindow(QMainWindow):
                 return
             
             directory_path = Path(directory)
+            # Remember the last selected directory as the current link search directory
+            try:
+                if directory_path and directory_path.exists():
+                    self.current_link_search_dir = directory_path
+            except Exception:
+                pass
             
             # Ask if user wants to force reprocessing of files even if tracked
             force = QMessageBox.question(
@@ -293,6 +310,22 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logger.error(f"Error parsing text files: {e}")
             QMessageBox.critical(self, "Error", f"Failed to parse files: {str(e)}")
+
+    def open_link_search_directory(self) -> None:
+        """Open the current directory where link files are being searched."""
+        try:
+            path = getattr(self, 'current_link_search_dir', None)
+            if not path or not isinstance(path, Path):
+                path = self.file_processor.link_files_dir
+            # Ensure directory exists
+            try:
+                path.mkdir(parents=True, exist_ok=True)
+            except Exception:
+                pass
+            QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
+        except Exception as e:
+            logger.error(f"Failed to open link search directory: {e}")
+            QMessageBox.warning(self, "Open Folder", f"Could not open folder: {e}")
     
     def load_from_clipboard(self) -> None:
         """Load links from clipboard."""

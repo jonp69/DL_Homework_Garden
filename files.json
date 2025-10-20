@@ -19,5 +19,19 @@
     "status": "processed",
     "size_bytes": 41940,
     "links_found": 0
+  },
+  "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\Novo Documento de Texto.txt": {
+    "path": "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\Novo Documento de Texto.txt",
+    "processed_timestamp": "2025-09-20T12:41:00.758995",
+    "status": "processed",
+    "size_bytes": 4432,
+    "links_found": 0
+  },
+  "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\Novo Documento de Texto (2).txt": {
+    "path": "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\Novo Documento de Texto (2).txt",
+    "processed_timestamp": "2025-09-20T13:09:26.684133",
+    "status": "processed",
+    "size_bytes": 11526,
+    "links_found": 0
   }
 }
