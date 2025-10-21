@@ -13058,5 +13058,427 @@
     "description": "",
     "created_timestamp": "2025-09-28T15:55:43.782847",
     "modified_timestamp": "2025-09-28T16:01:48.038386"
+  },
+  {
+    "id": "5829bf5c-3fac-467c-962a-71ea3cd036bc",
+    "numeric_id": 383,
+    "name": "Unnamed_383",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "netoptimizer",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T17:51:26.428574",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "655099a0-e18d-4a53-adf7-82bbdf89c5a2",
+    "numeric_id": 384,
+    "name": "Unnamed_384",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "phatphrogstudio",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:06:47.228201",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "8b487faf-e084-4549-86f9-d6a3e77a3263",
+    "numeric_id": 385,
+    "name": "Unnamed_385",
+    "rules": [
+      {
+        "token": "dnd5e",
+        "match_type": "match_any",
+        "expression": ""
+      },
+      {
+        "token": "wikidot",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:07:14.162400",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "ee139ebf-30a5-40e4-a124-01339d266e51",
+    "numeric_id": 386,
+    "name": "Unnamed_386",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "reddit",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "search",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "q=No+clever+title+just+buy+my+porn+please",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:07:44.138863",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "081ce11e-c936-4a26-8c2c-fae2b1fd3ba0",
+    "numeric_id": 387,
+    "name": "Unnamed_387",
+    "rules": [
+      {
+        "token": "powerliftingtechnique",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "kneeling-squat",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:08:12.060806",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "32fa5543-a8d4-44b1-ae39-2af73f3ebbb5",
+    "numeric_id": 388,
+    "name": "Unnamed_388",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "hpari",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "br",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:09:11.318358",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "1b962aea-34e9-47a0-a2d8-a3fb56ff47a0",
+    "numeric_id": 389,
+    "name": "Unnamed_389",
+    "rules": [
+      {
+        "token": "c",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "lovense-api",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:17:05.615007",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "4f290b25-229d-41db-ade0-cfe819cf976f",
+    "numeric_id": 390,
+    "name": "Unnamed_390",
+    "rules": [
+      {
+        "token": "hentai-moon",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "categories",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "hentai-school",
+        "match_type": "match_any",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:17:51.091438",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "18115c05-54a5-4a20-8a2d-fbd3fac8f1e4",
+    "numeric_id": 391,
+    "name": "Unnamed_391",
+    "rules": [
+      {
+        "token": "ai",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "google",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "dev",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "gemini-api",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:26:51.253582",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "d97825e5-1ba0-4e8d-b7af-944d1da9b95d",
+    "numeric_id": 392,
+    "name": "Unnamed_392",
+    "rules": [
+      {
+        "token": "chatgpt",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:27:07.477661",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "bb359774-8627-46e6-9301-497a013da7cc",
+    "numeric_id": 393,
+    "name": "Unnamed_393",
+    "rules": [
+      {
+        "token": "mistral",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "ai",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "news",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:27:23.442654",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "1a5e75ff-b59f-4674-ae94-cce8098b3c5f",
+    "numeric_id": 394,
+    "name": "Unnamed_394",
+    "rules": [
+      {
+        "token": "mistral",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "ai",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:27:50.215728",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "3a4ec1b4-aaf6-476e-908d-2673b8dd00c7",
+    "numeric_id": 395,
+    "name": "Unnamed_395",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "5asec",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "pt",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "pt-pt",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "content",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "tabela-de-precos-0",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_download",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:28:30.623982",
+    "modified_timestamp": ""
+  },
+  {
+    "id": "7d5a1e0f-227e-4490-9a87-2a98ae36a808",
+    "numeric_id": 396,
+    "name": "Unnamed_396",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "wolframalpha",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-10-20T18:28:46.026827",
+    "modified_timestamp": ""
   }
 ]
