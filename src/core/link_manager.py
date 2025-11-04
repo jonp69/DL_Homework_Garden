@@ -82,10 +82,21 @@ class LinkMetadata:
 class LinkManager:
     """Manager for link processing and persistence."""
     
-    def __init__(self, links_file: Path):
+    def __init__(self, links_file: Path, config: Optional[Any] = None):
         self.links_file = links_file
         self.links: Dict[str, LinkMetadata] = {}
+        # Optional config for behavior flags
+        self.config = config
         self.load_links()
+
+    # --- internal helpers ---
+    def _get_flag(self, key: str, default: Any) -> Any:
+        try:
+            if self.config is not None and hasattr(self.config, 'get'):
+                return self.config.get(key, default)
+        except Exception:
+            pass
+        return default
     
     def load_links(self) -> bool:
         """Load links from JSON file."""
@@ -135,6 +146,10 @@ class LinkManager:
         
         # If link exists but was deleted, reactivate it
         if existing_link and existing_link.deleted:
+            # Honor config: optionally do not restore deleted links when importing
+            if self._get_flag('processing.do_not_restore_on_import', True):
+                logger.info(f"Import encountered previously-deleted link (not restored per config): {url}")
+                return existing_link
             existing_link.deleted = False
             existing_link.status = LinkStatus.PENDING
             existing_link.added_timestamp = datetime.now().isoformat()
@@ -235,6 +250,36 @@ class LinkManager:
         for url in urls:
             # Clean up URL (remove trailing punctuation)
             url = url.rstrip('.,;:!?')
+            # Evaluate existing entries and config flags before adding/including
+            existing = self.get_link_by_url(url)
+            ignore_existing = bool(self._get_flag('processing.ignore_existing_on_import', True))
+            do_not_restore = bool(self._get_flag('processing.do_not_restore_on_import', True))
+
+            if existing:
+                # If configured, skip returning existing links entirely (acts as if not present in input)
+                if ignore_existing:
+                    # Additionally, for transparency, log when we skip and why
+                    reason = "already on list"
+                    # If flagged not to restore and the existing is logically ignored, mention it
+                    if existing.deleted:
+                        reason = "previously deleted"
+                    elif existing.status in {LinkStatus.IGNORED, LinkStatus.SKIPPED, LinkStatus.TO_SKIP, LinkStatus.TO_SKIP_LIMIT, LinkStatus.MARKED_FOR_DELETION}:
+                        reason = f"existing status={existing.status.value}"
+                    logger.debug(f"Import skip ({reason}): {url}")
+                    # Do not modify existing, do not include in returned list
+                    continue
+
+                # If not ignoring existing entries, include them so caller may reprocess
+                # But honor do_not_restore when the existing item is deleted
+                if existing.deleted and do_not_restore:
+                    logger.info(f"Import skip (deleted, not restoring): {url}")
+                    continue
+                # Possibly reactivate via add_link (will respect do_not_restore)
+                link = self.add_link(url, source, source_file)
+                added_links.append(link)
+                continue
+
+            # New URL -> add and include
             link = self.add_link(url, source, source_file)
             added_links.append(link)
         

@@ -37,7 +37,14 @@ class Config:
                 # Domains to ignore entirely (e.g., ["example.com", "www.pixiv.net"])
                 "ignored_domains": [],
                 # Regex patterns to ignore (applied to full URL)
-                "ignored_regexes": []
+                "ignored_regexes": [],
+                # New flags controlling how imported links are handled
+                # If True: when importing, URLs already present in the link list are ignored (not reprocessed)
+                # If False: existing URLs are returned from import so they can be reprocessed
+                "ignore_existing_on_import": True,
+                # If True: do NOT restore/reactivate links that were previously deleted/ignored/skipped
+                # Imported items matching those existing entries will be treated as "not present" and skipped
+                "do_not_restore_on_import": True
             },
             "gallery_dl": {
                 "config_file": "",
@@ -60,6 +67,9 @@ class Config:
         # Ensure critical fields exist in saved config (persist defaults if missing)
         # The value can be blank; we just guarantee the field is present on disk
         self.ensure_field("gallery_dl.output_dir", "")
+    # Ensure newly added processing flags exist in file so users can toggle them
+    self.ensure_field("processing.ignore_existing_on_import", True)
+    self.ensure_field("processing.do_not_restore_on_import", True)
 
         # Ensure the Link_files directory exists
         try:

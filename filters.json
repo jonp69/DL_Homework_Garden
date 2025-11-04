@@ -1724,12 +1724,12 @@
         "expression": ""
       }
     ],
-    "action": "skip",
+    "action": "to_download",
     "enabled": true,
     "priority": 0,
     "description": "",
     "created_timestamp": "2025-09-27T09:27:18.524625",
-    "modified_timestamp": ""
+    "modified_timestamp": "2025-10-21T16:19:00.984848"
   },
   {
     "id": "eb9c9909-0c77-41a4-b16c-3b720ad69e05",
