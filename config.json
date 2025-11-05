@@ -7,7 +7,9 @@
   "processing": {
     "ignore_host_only": true,
     "ignored_domains": [],
-    "ignored_regexes": []
+    "ignored_regexes": [],
+    "ignore_existing_on_import": true,
+    "do_not_restore_on_import": true
   },
   "gallery_dl": {
     "config_file": "",

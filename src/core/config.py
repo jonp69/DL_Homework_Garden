@@ -67,9 +67,9 @@ class Config:
         # Ensure critical fields exist in saved config (persist defaults if missing)
         # The value can be blank; we just guarantee the field is present on disk
         self.ensure_field("gallery_dl.output_dir", "")
-    # Ensure newly added processing flags exist in file so users can toggle them
-    self.ensure_field("processing.ignore_existing_on_import", True)
-    self.ensure_field("processing.do_not_restore_on_import", True)
+        # Ensure newly added processing flags exist in file so users can toggle them
+        self.ensure_field("processing.ignore_existing_on_import", True)
+        self.ensure_field("processing.do_not_restore_on_import", True)
 
         # Ensure the Link_files directory exists
         try:

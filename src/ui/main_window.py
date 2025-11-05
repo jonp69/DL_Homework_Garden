@@ -41,8 +41,8 @@ class MainWindow(QMainWindow):
         self.config = config
         
         # Initialize managers
-    # Pass config to LinkManager so it can honor import behavior flags
-    self.link_manager = LinkManager(config.links_file, config=self.config)
+        # Pass config to LinkManager so it can honor import behavior flags
+        self.link_manager = LinkManager(config.links_file, config=self.config)
         self.filter_manager = FilterManager(config.filters_file)
         # Resolver for id->name display
         self.filter_name_resolver = FilterNameResolver(self.filter_manager.filters_file)

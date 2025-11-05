@@ -75,5 +75,19 @@
     "status": "processed",
     "size_bytes": 8113,
     "links_found": 0
+  },
+  "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\links00005_pixiv.txt": {
+    "path": "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\links00005_pixiv.txt",
+    "processed_timestamp": "2025-11-04T23:25:44.087653",
+    "status": "processed",
+    "size_bytes": 73226,
+    "links_found": 0
+  },
+  "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\urls_20251020_180355.txt": {
+    "path": "C:\\Users\\jonp6\\Github\\DL_Homework_Garden\\Link_files\\urls_20251020_180355.txt",
+    "processed_timestamp": "2025-11-04T23:25:44.091862",
+    "status": "processed",
+    "size_bytes": 20094,
+    "links_found": 0
   }
 }
