@@ -13480,5 +13480,33 @@
     "description": "",
     "created_timestamp": "2025-10-20T18:28:46.026827",
     "modified_timestamp": ""
+  },
+  {
+    "id": "4966c761-d755-4c44-a2c6-b46cd32dfd9e",
+    "numeric_id": 397,
+    "name": "Unnamed_397",
+    "rules": [
+      {
+        "token": "www",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "dlsite",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      },
+      {
+        "token": "com",
+        "match_type": "match_case_insensitive",
+        "expression": ""
+      }
+    ],
+    "action": "to_skip",
+    "enabled": true,
+    "priority": 0,
+    "description": "",
+    "created_timestamp": "2025-11-05T01:33:28.294968",
+    "modified_timestamp": ""
   }
 ]
