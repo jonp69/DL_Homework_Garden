@@ -1,0 +1,3 @@
+# Mark the DB-like JSON as generated so GitHub Linguist and many code-intel/indexers treat it as generated
+# Replace data/huge.json with your actual path
+links.json linguist-generated=true
